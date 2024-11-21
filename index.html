@@ -101,13 +101,11 @@
                 <div class="grid grid-cols-2 gap-2 text-sm">
                     <div>Base Salary:</div>
                     <div>$<span id="summary-base-salary">0</span></div>
-                    <div>Q1 Ramp Bonus (if achieved):</div>
-                    <div>$<span id="ramp-bonus">0</span></div>
                     <div>ACV Base Commission:</div>
                     <div>$<span id="acv-base">0</span></div>
                     <div>ACV Accelerator Commission:</div>
                     <div>$<span id="acv-accelerator">0</span></div>
-                    <div>CS Bonus (if achieved):</div>
+                    <div>CS Bonus:</div>
                     <div>$<span id="cs-total">0</span></div>
                     <div class="font-bold">Total Potential Earnings:</div>
                     <div class="font-bold">$<span id="total-earnings">0</span></div>
@@ -117,11 +115,48 @@
     </div>
 
     <script>
-        // JavaScript Logic to Dynamically Update Fields
-        function updateAll() {
-            // Implement the logic to dynamically calculate values as described
-            // Update OTE, BCR, Accelerator Rates, Commissions, Totals
+        function formatDollar(value) {
+            return value.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
         }
+
+        function formatAndUpdate(id) {
+            const input = document.getElementById(id);
+            const value = input.value.replace(/,/g, "");
+            input.value = formatDollar(Number(value) || 0);
+            updateAll();
+        }
+
+        function updateAll() {
+            const ote = Number(document.getElementById('ote').value.replace(/,/g, "")) || 0;
+            const annualTarget = Number(document.getElementById('annual-target').value.replace(/,/g, "")) || 0;
+            const baseSalary = ote * 0.6;
+            const acvVariable = ote * 0.3;
+            const csVariable = ote * 0.1;
+
+            // Update Compensation Structure
+            document.getElementById('base-salary').textContent = formatDollar(baseSalary);
+            document.getElementById('acv-variable').textContent = formatDollar(acvVariable);
+            document.getElementById('cs-variable').textContent = formatDollar(csVariable);
+
+            const commRate = (acvVariable / annualTarget) * 100;
+            const accRate = commRate * 1.5;
+
+            // Update Quarterly Goals and Commissions
+            ['q1', 'q2', 'q3', 'q4'].forEach((quarter, idx) => {
+                const goal = (annualTarget * [0.1429, 0.2143, 0.2857, 0.3571][idx]).toFixed(0);
+                const actual = Number(document.getElementById(`${quarter}-acv`).value.replace(/,/g, "")) || 0;
+
+                document.getElementById(`${quarter}-goal`).textContent = formatDollar(goal);
+
+                const commission =
+                    actual <= goal
+                        ? actual * (commRate / 100)
+                        : goal * (commRate / 100) + (actual - goal) * (accRate / 100);
+
+                document.getElementById(`${quarter}-comm`).textContent = formatDollar(commission);
+            });
+        }
+
         updateAll();
     </script>
 </body>

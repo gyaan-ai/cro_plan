@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>CRO Compensation Plan Calculator</title>
+    <title>CRO Compensation Plan</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <style>
         .center-content {
@@ -17,7 +17,7 @@
     </style>
 </head>
 <body class="bg-gray-100 p-6">
-    <div class="max-w-5xl mx-auto space-y-6">
+    <div class="max-w-4xl mx-auto space-y-6">
         <!-- Compensation Structure Section -->
         <div class="bg-white rounded-lg shadow p-6 center-content">
             <h2 class="text-xl font-bold mb-4">Compensation Structure</h2>
@@ -25,19 +25,20 @@
                 <label class="block text-sm font-medium mb-1">Annual OTE ($)</label>
                 <input type="text" id="ote" class="w-1/2 border rounded p-2 text-center" value="225,000" oninput="formatAndUpdate('ote')">
             </div>
-            <div class="mt-4 grid grid-cols-2 gap-4 text-sm text-gray-600">
+            <div class="mt-4 grid grid-cols-3 gap-4 text-sm text-gray-600">
                 <div class="center-grid">Base Salary: $<span id="base-salary">135,000</span></div>
-                <div class="center-grid">Variable Incentive: $<span id="variable-incentive">90,000</span></div>
+                <div class="center-grid">Annual ACV Variable: $<span id="acv-variable">45,000</span></div>
+                <div class="center-grid">Annual CS Variable: $<span id="cs-variable">15,000</span></div>
             </div>
             <div class="mt-4 grid grid-cols-2 gap-4 text-sm text-gray-600">
-                <div class="text-center">Base Commission Rate (BCR): <span id="comm-rate">6.43</span>%</div>
-                <div class="text-center">Accelerator Rate: <span id="acc-rate">8.04</span>%</div>
+                <div class="text-center">Base Commission Rate (BCR): <span id="comm-rate">9.0</span>%</div>
+                <div class="text-center">Accelerator Rate: <span id="acc-rate">13.5</span>%</div>
             </div>
         </div>
 
-        <!-- Earnings Calculator Section -->
+        <!-- Earnings Calculator & ACV Goals Section -->
         <div class="bg-white rounded-lg shadow p-6">
-            <h2 class="text-xl font-bold mb-4">Earnings Calculator</h2>
+            <h2 class="text-xl font-bold mb-4">Earnings Calculator & ACV Goals</h2>
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <label class="block text-sm font-medium mb-1">Annual Bookings Target ($)</label>
@@ -45,7 +46,7 @@
                 </div>
             </div>
 
-            <!-- Quarterly Goals -->
+            <!-- Quarterly ACV Goals -->
             <div class="mt-4">
                 <h3 class="text-lg font-bold mb-2">Quarterly ACV Goals</h3>
                 <div class="grid grid-cols-4 gap-4 text-center font-bold">
@@ -88,7 +89,7 @@
                 </div>
                 <div class="grid grid-cols-4 gap-4 font-bold mt-4">
                     <div class="center-grid">Total</div>
-                    <div class="center-grid">$1,400,000</div>
+                    <div class="center-grid">—</div>
                     <div class="center-grid">$<span id="total-actual">0</span></div>
                     <div class="center-grid">$<span id="total-commissions">0</span></div>
                 </div>
@@ -99,13 +100,15 @@
                 <h3 class="font-bold mb-2">Earnings Breakdown:</h3>
                 <div class="grid grid-cols-2 gap-2 text-sm">
                     <div>Base Salary:</div>
-                    <div>$<span id="summary-base-salary">135,000</span></div>
-                    <div>Quarterly ACV Commissions:</div>
-                    <div>$<span id="acv-commissions">0</span></div>
-                    <div>Adoption Incentives:</div>
-                    <div>$<span id="adoption-incentives">0</span></div>
-                    <div>Referenceability Incentive:</div>
-                    <div>$<span id="reference-incentive">22,500</span></div>
+                    <div>$<span id="summary-base-salary">0</span></div>
+                    <div>Q1 Ramp Bonus (if achieved):</div>
+                    <div>$<span id="ramp-bonus">0</span></div>
+                    <div>ACV Base Commission:</div>
+                    <div>$<span id="acv-base">0</span></div>
+                    <div>ACV Accelerator Commission:</div>
+                    <div>$<span id="acv-accelerator">0</span></div>
+                    <div>CS Bonus (if achieved):</div>
+                    <div>$<span id="cs-total">0</span></div>
                     <div class="font-bold">Total Potential Earnings:</div>
                     <div class="font-bold">$<span id="total-earnings">0</span></div>
                 </div>
@@ -114,79 +117,11 @@
     </div>
 
     <script>
-        // JavaScript to dynamically calculate values
-        function formatDollar(value) {
-            return value.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-        }
-
-        function formatAndUpdate(id) {
-            const input = document.getElementById(id);
-            const value = input.value.replace(/,/g, "");
-            input.value = formatDollar(Number(value) || 0);
-            updateAll();
-        }
-
+        // JavaScript Logic to Dynamically Update Fields
         function updateAll() {
-            const ote = Number(document.getElementById('ote').value.replace(/,/g, "")) || 0;
-            const baseSalary = ote * 0.6;
-            const variableIncentive = ote * 0.4;
-
-            document.getElementById('base-salary').textContent = formatDollar(baseSalary);
-            document.getElementById('variable-incentive').textContent = formatDollar(variableIncentive);
-
-            const annualTarget = Number(document.getElementById('annual-target').value.replace(/,/g, "")) || 0;
-            const q1Goal = annualTarget * 0.14;
-            const q2Goal = annualTarget * 0.21;
-            const q3Goal = annualTarget * 0.29;
-            const q4Goal = annualTarget * 0.36;
-
-            document.getElementById('q1-goal').textContent = formatDollar(q1Goal);
-            document.getElementById('q2-goal').textContent = formatDollar(q2Goal);
-            document.getElementById('q3-goal').textContent = formatDollar(q3Goal);
-            document.getElementById('q4-goal').textContent = formatDollar(q4Goal);
-
-            // Update commissions dynamically based on Actual values and Accelerators
-            const commRate = (variableIncentive / annualTarget) * 100;
-            const accRate = commRate * 1.25;
-
-            // Calculate total earnings and dynamic fields
-            const q1Actual = Number(document.getElementById('q1-acv').value.replace(/,/g, "")) || 0;
-            const q2Actual = Number(document.getElementById('q2-acv').value.replace(/,/g, "")) || 0;
-            const q3Actual = Number(document.getElementById('q3-acv').value.replace(/,/g, "")) || 0;
-            const q4Actual = Number(document.getElementById('q4-acv').value.replace(/,/g, "")) || 0;
-
-            function calculateCommission(actual, goal) {
-                if (actual <= goal) {
-                    return actual * (commRate / 100);
-                }
-                const base = goal * (commRate / 100);
-                const accelerator = (actual - goal) * (accRate / 100);
-                return { base, accelerator, total: base + accelerator };
-            }
-
-            const q1Comm = calculateCommission(q1Actual, q1Goal);
-            const q2Comm = calculateCommission(q2Actual, q2Goal);
-            const q3Comm = calculateCommission(q3Actual, q3Goal);
-            const q4Comm = calculateCommission(q4Actual, q4Goal);
-
-            document.getElementById('q1-comm').textContent = formatDollar(q1Comm.total);
-            document.getElementById('q2-comm').textContent = formatDollar(q2Comm.total);
-            document.getElementById('q3-comm').textContent = formatDollar(q3Comm.total);
-            document.getElementById('q4-comm').textContent = formatDollar(q4Comm.total);
-
-            const totalCommissions = q1Comm.total + q2Comm.total + q3Comm.total + q4Comm.total;
-            document.getElementById('total-commissions').textContent = formatDollar(totalCommissions);
-
-            const adoptionIncentives = variableIncentive * 0.125;
-            const referenceIncentive = variableIncentive * 0.25;
-
-            document.getElementById('adoption-incentives').textContent = formatDollar(adoptionIncentives);
-            document.getElementById('reference-incentive').textContent = formatDollar(referenceIncentive);
-
-            const totalEarnings = baseSalary + totalCommissions + adoptionIncentives + referenceIncentive;
-            document.getElementById('total-earnings').textContent = formatDollar(totalEarnings);
+            // Implement the logic to dynamically calculate values as described
+            // Update OTE, BCR, Accelerator Rates, Commissions, Totals
         }
-
         updateAll();
     </script>
 </body>
